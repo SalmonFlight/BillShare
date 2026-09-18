@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ room.name }} — BillShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-8">
+  <div class="bg-white rounded-2xl border border-red-100 p-6 sm:p-8">
+    <h1 class="text-xl font-semibold tracking-tight text-gray-900 mb-2">
+      Delete &ldquo;{{ room.name }}&rdquo;?
+    </h1>
+    <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+      This permanently removes the room and everything in it. There is no undo.
+      Everyone who was a member will lose access to this bill.
+    </p>
+
+    <div class="bg-gray-50 rounded-xl px-5 py-4 mb-6 text-sm space-y-2">
+      <div class="flex justify-between">
+        <span class="text-gray-500">Items</span>
+        <span class="tabular-nums text-gray-700">{{ item_count }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Payments</span>
+        <span class="tabular-nums text-gray-700">{{ payment_count }}</span>
+      </div>
+      <div class="flex justify-between pt-2 border-t border-gray-200">
+        <span class="text-gray-600 font-medium">Total spent</span>
+        <span class="tabular-nums font-semibold text-gray-900">{{ total_spent }}</span>
+      </div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit"
+              class="w-full bg-red-600 hover:bg-red-700 text-white font-medium
+                     py-2.5 px-4 rounded-lg transition mb-2">
+        Delete permanently
+      </button>
+    </form>
+
+    <a href="{% url 'rooms:room_detail' room.pk %}"
+       class="block text-center text-sm text-gray-400 hover:text-gray-600
+              transition py-2">
+      Cancel
+    </a>
+  </div>
+</div>
+{% endblock %}

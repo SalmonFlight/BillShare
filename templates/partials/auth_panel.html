@@ -1,0 +1,83 @@
+{% comment %}
+Decorative right-hand panel used by the signup and login pages.
+Pure presentation — no context variables required.
+{% endcomment %}
+<div class="relative hidden lg:block overflow-hidden
+            bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-500">
+
+  {# Abstract background shapes #}
+  <div class="absolute -top-24 -right-24 w-[420px] h-[420px]
+              bg-indigo-800/30 rounded-[140px] rotate-12"></div>
+  <div class="absolute -bottom-40 -left-32 w-[560px] h-[560px]
+              bg-blue-400/20 rounded-full"></div>
+  <div class="absolute top-1/3 right-1/4 w-72 h-72
+              bg-white/5 rounded-full"></div>
+  <div class="absolute top-12 right-12 w-40 h-40
+              bg-indigo-400/20 rounded-3xl -rotate-12"></div>
+
+  {# Card 1: room mockup #}
+  <div class="absolute top-[14%] left-[12%] w-72
+              bg-white rounded-3xl shadow-xl p-6">
+    <p class="text-xs font-medium text-amber-500 mb-1">Friday dinner</p>
+    <p class="text-3xl font-bold text-gray-900 tabular-nums mb-6">
+      $176.18
+    </p>
+
+    <svg viewBox="0 0 200 40" class="w-full h-10 mb-3">
+      <path d="M0 25 Q 25 5, 50 20 T 100 20 T 150 22 T 200 18"
+            fill="none" stroke="#818cf8" stroke-width="2.5"
+            stroke-linecap="round"/>
+      <path d="M0 28 Q 25 20, 50 28 T 100 28 T 150 30 T 200 26"
+            fill="none" stroke="#fbbf24" stroke-width="2.5"
+            stroke-linecap="round" opacity="0.9"/>
+    </svg>
+
+    <div class="flex items-center justify-end">
+      <span class="w-8 h-8 rounded-full bg-gray-900 text-white
+                   text-xs font-semibold
+                   flex items-center justify-center">
+        4
+      </span>
+    </div>
+  </div>
+
+  {# Member initials #}
+  <div class="absolute top-[22%] right-[10%] flex flex-col gap-4">
+    <span class="w-14 h-14 rounded-full bg-white shadow-lg
+                 flex items-center justify-center
+                 text-indigo-600 font-semibold">A</span>
+    <span class="w-14 h-14 rounded-full bg-white shadow-lg
+                 flex items-center justify-center
+                 text-emerald-600 font-semibold">B</span>
+  </div>
+
+  {# Card 2: value proposition #}
+  <div class="absolute bottom-[12%] right-[8%] w-80
+              bg-white rounded-3xl shadow-xl p-6 flex gap-5">
+
+    <div class="flex flex-col gap-2 pt-1 shrink-0">
+      <div class="h-1.5 w-10 bg-indigo-600 rounded-full"></div>
+      <div class="h-1.5 w-14 bg-gray-200 rounded-full"></div>
+      <div class="h-1.5 w-16 bg-gray-200 rounded-full"></div>
+      <div class="h-1.5 w-12 bg-gray-200 rounded-full"></div>
+      <div class="h-1.5 w-16 bg-gray-200 rounded-full"></div>
+      <div class="h-1.5 w-10 bg-gray-200 rounded-full"></div>
+    </div>
+
+    <div class="flex-1">
+      <div class="w-12 h-12 mb-3 text-amber-500">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 14.25 6.75 12 4.5 14.25M9 9.75 6.75 12 4.5 9.75M15 9.75h4.5m-4.5 4.5h4.5M3.375 4.5h17.25c.621 0 1.125.504 1.125 1.125v12.75c0 .621-.504 1.125-1.125 1.125H3.375A1.125 1.125 0 0 1 2.25 18.375V5.625c0-.621.504-1.125 1.125-1.125Z"/>
+        </svg>
+      </div>
+      <h3 class="font-semibold text-gray-900 mb-1">Fair splits, always</h3>
+      <p class="text-xs text-gray-500 leading-relaxed">
+        Tax and tip are shared proportionally — based on what each person
+        actually ordered.
+      </p>
+    </div>
+  </div>
+
+</div>

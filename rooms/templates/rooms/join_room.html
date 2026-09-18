@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Join {{ room.name }} — BillShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
+    <h1 class="text-xl font-semibold tracking-tight text-gray-900 mb-6">
+      {{ room.name }}
+    </h1>
+
+    {% if membership and membership.status == "approved" %}
+      <p class="text-sm text-gray-500 mb-5">You're already a member.</p>
+      <a href="{% url 'rooms:room_detail' room.pk %}"
+         class="block text-center bg-indigo-600 hover:bg-indigo-700 text-white
+                font-medium py-2.5 px-4 rounded-lg transition
+                shadow-sm shadow-indigo-500/20">
+        Open room
+      </a>
+
+    {% elif membership and membership.status == "pending" %}
+      <div class="flex items-start gap-3 bg-amber-50 border border-amber-100
+                  rounded-xl px-4 py-3.5">
+        <span class="w-2 h-2 rounded-full bg-amber-400 mt-1.5 shrink-0"></span>
+        <p class="text-sm text-amber-800">
+          Your join request is pending approval from the host.
+        </p>
+      </div>
+
+    {% elif membership and membership.status == "rejected" %}
+      <p class="text-sm text-gray-500 mb-5">
+        Your previous request was rejected. You may ask again.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit"
+                class="w-full bg-white hover:bg-gray-50 text-gray-700 font-medium
+                       py-2.5 px-4 rounded-lg border border-gray-200 transition">
+          Request again
+        </button>
+      </form>
+
+    {% elif membership and membership.status == "removed" %}
+      <div class="flex items-start gap-3 bg-gray-50 border border-gray-200
+                  rounded-xl px-4 py-3.5">
+        <span class="w-2 h-2 rounded-full bg-gray-400 mt-1.5 shrink-0"></span>
+        <p class="text-sm text-gray-600">
+          You were removed from this room by the host.
+        </p>
+      </div>
+
+    {% else %}
+      <p class="text-sm text-gray-500 mb-5">
+        Request to join? The host will need to approve you first.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white
+                       font-medium py-2.5 px-4 rounded-lg transition
+                       shadow-sm shadow-indigo-500/20">
+          Request to join
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

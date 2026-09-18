@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — BillShare{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="mb-8">
+    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">{{ heading }}</h1>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
+    <form method="post">
+      {% csrf_token %}
+
+      {% for field in form %}
+        {% if field.name == "description" or field.name == "cost" %}
+          {% include "partials/field.html" with field=field %}
+        {% endif %}
+      {% endfor %}
+
+      {% if form.non_field_errors %}
+        <div class="mb-5 rounded-lg bg-red-50 border border-red-100 px-4 py-2.5
+                    text-sm text-red-700">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="mt-6">
+        <div class="text-sm font-medium text-gray-700 mb-3">
+          Who's splitting this?
+        </div>
+        <div class="border border-gray-100 rounded-xl divide-y divide-gray-50">
+          {% for row in share_rows %}
+            <div class="flex items-center justify-between px-4 py-2.5 text-sm
+                        hover:bg-gray-50/50 transition">
+              <label class="flex items-center gap-3 cursor-pointer flex-1">
+                {{ row.share_field }}
+                <span class="text-gray-700">{{ row.display_name }}</span>
+              </label>
+              <label class="flex items-center gap-2 text-gray-400">
+                <span class="text-[10px] uppercase tracking-wide">weight</span>
+                {{ row.weight_field }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+        <p class="mt-2 text-xs text-gray-400 leading-relaxed">
+          Tick everyone who shares this item. Weight sets their portion &mdash;
+          weight&nbsp;2 vs&nbsp;1 means they pay twice as much. Leave at&nbsp;1
+          for an even split.
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white
+                       font-medium py-2.5 px-4 rounded-lg transition
+                       shadow-sm shadow-indigo-500/20">
+          {{ submit_label }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="mt-6 text-sm text-center">
+    <a href="{% url 'rooms:room_detail' room.pk %}"
+       class="text-gray-400 hover:text-gray-600 transition">
+      Back to room
+    </a>
+  </p>
+</div>
+{% endblock %}

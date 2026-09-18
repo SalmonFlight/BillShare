@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Settings — {{ room.name }} — BillShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="mb-8">
+    <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Tax &amp; tip</h1>
+    <p class="text-sm text-gray-500 mt-1">
+      Shared costs for <span class="font-medium text-gray-700">{{ room.name }}</span>.
+      Each member pays a proportional share based on what they ordered.
+    </p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        {% include "partials/field.html" with field=field %}
+      {% endfor %}
+      <div class="mt-6">
+        <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white
+                       font-medium py-2.5 px-4 rounded-lg transition
+                       shadow-sm shadow-indigo-500/20">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p class="mt-6 text-sm text-center">
+    <a href="{% url 'rooms:room_detail' room.pk %}"
+       class="text-gray-400 hover:text-gray-600 transition">
+      Back to room
+    </a>
+  </p>
+</div>
+{% endblock %}

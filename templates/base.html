@@ -1,0 +1,149 @@
+{% load static %}
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}BillShare{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full bg-gray-50 text-gray-900 antialiased">
+
+  {# ---------- Sticky nav ---------- #}
+  <nav class="sticky top-0 z-40 bg-white/85 backdrop-blur border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+
+      {# Wordmark #}
+      <a href="{% url 'rooms:room_list' %}"
+         class="font-semibold tracking-tight text-gray-900 hover:text-indigo-600 transition">
+        BillShare
+      </a>
+
+      {# Right side #}
+      <div class="flex items-center gap-1 text-sm">
+        {% if user.is_authenticated %}
+          <a href="{% url 'rooms:my_debts' %}"
+             class="px-3 py-1.5 rounded-full text-gray-600
+                    hover:text-gray-900 hover:bg-gray-100 transition">
+            My debts
+          </a>
+
+          {# User chip #}
+          <div class="flex items-center gap-2 pl-2 ml-1 border-l border-gray-200">
+            <span class="w-7 h-7 rounded-full
+                         bg-gradient-to-br from-indigo-100 to-blue-100
+                         text-indigo-700 text-xs font-semibold
+                         flex items-center justify-center
+                         uppercase">
+              {{ user.username|slice:":1" }}
+            </span>
+            <span class="text-gray-700 hidden sm:inline">{{ user.username }}</span>
+            <form method="post" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="px-3 py-1.5 rounded-full text-gray-500
+                             hover:text-gray-900 hover:bg-gray-100 transition">
+                Log out
+              </button>
+            </form>
+          </div>
+        {% else %}
+          <a href="{% url 'accounts:login' %}"
+             class="px-3 py-1.5 rounded-full text-gray-600
+                    hover:text-gray-900 hover:bg-gray-100 transition">
+            Log in
+          </a>
+          <a href="{% url 'accounts:signup' %}"
+             class="ml-1 px-4 py-1.5 rounded-full
+                    bg-indigo-600 hover:bg-indigo-700 text-white font-medium
+                    shadow-sm shadow-indigo-500/30 hover:shadow-md hover:shadow-indigo-500/40
+                    transition">
+            Sign up
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  {# ---------- Flash messages ---------- #}
+  {% if messages %}
+    <div class="max-w-5xl mx-auto px-4 mt-5 space-y-2">
+      {% for message in messages %}
+        <div class="flex items-start gap-3 rounded-xl px-4 py-3 text-sm border shadow-sm
+          {% if message.tags == 'success' %}bg-green-50 text-green-800 border-green-200
+          {% elif message.tags == 'error' %}bg-red-50 text-red-800 border-red-200
+          {% elif message.tags == 'warning' %}bg-amber-50 text-amber-800 border-amber-200
+          {% else %}bg-indigo-50 text-indigo-800 border-indigo-200{% endif %}">
+
+          <span class="shrink-0 mt-0.5">
+            {% if message.tags == 'success' %}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
+            {% elif message.tags == 'error' %}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M9.75 9.75l4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
+            {% elif message.tags == 'warning' %}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
+              </svg>
+            {% else %}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/>
+              </svg>
+            {% endif %}
+          </span>
+
+          <span class="flex-1">{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# ---------- Main ---------- #}
+  <main class="{% block main_class %}max-w-5xl mx-auto px-4 py-8{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {# ---------- Footer ---------- #}
+  <footer class="max-w-5xl mx-auto px-4 py-10 mt-8
+                 text-center text-xs text-gray-400">
+    Built with Django &amp; Tailwind · BillShare
+  </footer>
+
+  <script>
+    // Show / hide password toggle.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-password-toggle]');
+      if (!btn) return;
+      e.preventDefault();
+
+      var input = document.getElementById(btn.dataset.passwordToggle);
+      if (!input) return;
+
+      var wasHidden = input.type === 'password';
+      input.type = wasHidden ? 'text' : 'password';
+
+      var showIcon = btn.querySelector('[data-eye-show]');
+      var hideIcon = btn.querySelector('[data-eye-hide]');
+      if (showIcon) showIcon.classList.toggle('hidden', !wasHidden);
+      if (hideIcon) hideIcon.classList.toggle('hidden', wasHidden);
+
+      btn.setAttribute(
+        'aria-label',
+        wasHidden ? 'Hide password' : 'Show password'
+      );
+    });
+  </script>
+
+</body>
+</html>

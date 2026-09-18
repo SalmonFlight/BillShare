@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% block title %}{{ room.name }} — BillShare{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+  <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-gray-900">{{ room.name }}</h1>
+      <p class="text-sm text-gray-500 mt-1 flex items-center gap-2">
+        <span>Join code</span>
+        <code class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded
+                     font-mono text-xs tracking-widest">
+          {{ room.join_code }}
+        </code>
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      {% if not room.is_archived %}
+        <a href="{% url 'rooms:item_create' room.pk %}"
+           class="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700
+                  text-white text-sm font-medium px-4 py-2 rounded-lg transition
+                  shadow-sm shadow-indigo-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+          Add item
+        </a>
+      {% endif %}
+      {% if is_host %}
+        {% if not room.is_archived %}
+          <a href="{% url 'rooms:guest_create' room.pk %}"
+             class="bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium
+                    px-4 py-2 rounded-lg border border-gray-200 transition">
+            Add guest
+          </a>
+          <a href="{% url 'rooms:room_settings' room.pk %}"
+             class="bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium
+                    px-4 py-2 rounded-lg border border-gray-200 transition">
+            Settings
+          </a>
+          <a href="{% url 'rooms:room_requests' room.pk %}"
+             class="bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium
+                    px-4 py-2 rounded-lg border border-gray-200 transition">
+            Requests
+          </a>
+          <form method="post" action="{% url 'rooms:room_archive' room.pk %}"
+                class="inline">
+            {% csrf_token %}
+            <button type="submit"
+                    class="bg-white hover:bg-gray-50 text-gray-500 text-sm font-medium
+                           px-4 py-2 rounded-lg border border-gray-200 transition">
+              Archive
+            </button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'rooms:room_unarchive' room.pk %}"
+                class="inline">
+            {% csrf_token %}
+            <button type="submit"
+                    class="bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium
+                           px-4 py-2 rounded-lg border border-gray-200 transition">
+              Unarchive
+            </button>
+          </form>
+          {% if is_settled %}
+            <a href="{% url 'rooms:room_delete' room.pk %}"
+               class="bg-white hover:bg-red-50 text-red-600 text-sm font-medium
+                      px-4 py-2 rounded-lg border border-red-200 transition">
+              Delete
+            </a>
+          {% endif %}
+        {% endif %}
+      {% else %}
+        {% if not room.is_archived %}
+          <form method="post" action="{% url 'rooms:leave_room' room.pk %}">
+            {% csrf_token %}
+            <button type="submit"
+                    class="bg-white hover:bg-gray-50 text-gray-500 text-sm font-medium
+                           px-4 py-2 rounded-lg border border-gray-200 transition">
+              Leave
+            </button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if room.is_archived %}
+  <div class="mb-6 bg-gray-50 border border-gray-200 rounded-xl px-5 py-3.5
+              flex items-center gap-3 text-sm">
+    <span class="w-2 h-2 rounded-full bg-gray-400 shrink-0"></span>
+    <span class="text-gray-500">
+      This room is archived. Unarchive it to make changes.
+    </span>
+  </div>
+{% endif %}
+
+{% if summary.outstanding > 0 %}
+  <div class="mb-6 bg-amber-50 border border-amber-100 rounded-xl px-5 py-3.5
+              flex items-center justify-between text-sm">
+    <span class="text-amber-800">
+      Still owed to <span class="font-medium">{{ room.host.username }}</span>
+    </span>
+    <span class="font-semibold text-amber-900 tabular-nums">
+      {{ summary.outstanding }}
+    </span>
+  </div>
+{% elif summary.total > 0 %}
+  <div class="mb-6 bg-emerald-50 border border-emerald-100 rounded-xl px-5 py-3.5
+              flex items-center gap-3 text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+         stroke-width="2" stroke="currentColor" class="w-4 h-4 text-emerald-600 shrink-0">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+    </svg>
+    <span class="text-emerald-800">Everyone's settled up.</span>
+  </div>
+{% endif %}
+
+{% if room.tax_amount or room.tip_amount %}
+  <div class="mb-6 bg-white border border-gray-200 rounded-xl px-5 py-4">
+    <div class="flex flex-wrap items-center gap-x-8 gap-y-2 text-sm">
+      <div>
+        <span class="text-xs text-gray-400 block">Subtotal</span>
+        <span class="font-medium text-gray-900 tabular-nums">{{ summary.subtotal }}</span>
+      </div>
+      <div>
+        <span class="text-xs text-gray-400 block">Tax</span>
+        <span class="font-medium text-gray-900 tabular-nums">{{ summary.tax }}</span>
+      </div>
+      <div>
+        <span class="text-xs text-gray-400 block">Tip</span>
+        <span class="font-medium text-gray-900 tabular-nums">{{ summary.tip }}</span>
+      </div>
+      <div class="ml-auto">
+        <span class="text-xs text-gray-400 block">Total</span>
+        <span class="font-semibold text-gray-900 tabular-nums">{{ summary.total }}</span>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<section class="mb-10">
+  <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    Balances
+  </h2>
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b border-gray-100">
+          <tr class="text-xs text-gray-400 uppercase tracking-wider">
+            <th class="text-left px-5 py-3 font-medium">Member</th>
+            <th class="text-right px-5 py-3 font-medium">Subtotal</th>
+            <th class="text-right px-5 py-3 font-medium hidden sm:table-cell">Tax</th>
+            <th class="text-right px-5 py-3 font-medium hidden sm:table-cell">Tip</th>
+            <th class="text-right px-5 py-3 font-medium">Total</th>
+            <th class="text-right px-5 py-3 font-medium hidden md:table-cell">Paid</th>
+            <th class="text-right px-5 py-3 font-medium">Owes</th>
+            {% if is_host %}<th class="px-5 py-3"></th>{% endif %}
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {% for m in approved_members %}
+            <tr class="hover:bg-gray-50/50 transition">
+              <td class="px-5 py-3.5 whitespace-nowrap">
+                <a href="{% url 'rooms:member_detail' room.pk m.pk %}"
+                   class="text-indigo-600 hover:text-indigo-800 font-medium transition">
+                  {{ m.display_name }}
+                </a>
+                {% if m.user_id == room.host_id %}
+                  <span class="text-[10px] text-gray-300 ml-1.5 uppercase tracking-wide">host</span>
+                {% elif m.is_guest %}
+                  <span class="text-[10px] text-gray-300 ml-1.5 uppercase tracking-wide">guest</span>
+                {% endif %}
+                {% if is_host and m.is_guest and m.claim_code %}
+                  <div class="text-[10px] text-gray-300 mt-0.5 font-mono">
+                    /rooms/claim/{{ m.claim_code }}/
+                  </div>
+                {% endif %}
+              </td>
+              <td class="px-5 py-3.5 text-right tabular-nums text-gray-600">{{ m.subtotal }}</td>
+              <td class="px-5 py-3.5 text-right tabular-nums text-gray-400 hidden sm:table-cell">{{ m.tax_share }}</td>
+              <td class="px-5 py-3.5 text-right tabular-nums text-gray-400 hidden sm:table-cell">{{ m.tip_share }}</td>
+              <td class="px-5 py-3.5 text-right tabular-nums text-gray-900 font-medium">{{ m.grand_total }}</td>
+              <td class="px-5 py-3.5 text-right tabular-nums text-gray-400 hidden md:table-cell">{{ m.paid }}</td>
+              <td class="px-5 py-3.5 text-right tabular-nums font-medium">
+                {% if m.user_id == room.host_id %}
+                  <span class="text-gray-300">&mdash;</span>
+                {% elif m.balance_due > 0 %}
+                  <span class="text-red-600">{{ m.balance_due }}</span>
+                {% else %}
+                  <span class="text-emerald-600">{{ m.balance_due }}</span>
+                {% endif %}
+              </td>
+              {% if is_host %}
+                <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                  {% if not room.is_archived %}
+                    <a href="{% url 'rooms:payment_create' room.pk %}?member={{ m.user_id }}"
+                       class="text-indigo-600 hover:text-indigo-800 text-xs font-medium transition">
+                      Record
+                    </a>
+                    {% if m.user_id != room.host_id %}
+                      <form method="post"
+                            action="{% url 'rooms:member_remove' room.pk m.pk %}"
+                            class="inline ml-3">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="text-xs text-gray-300 hover:text-red-500 transition">
+                          Remove
+                        </button>
+                      </form>
+                    {% endif %}
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="border-t border-gray-100">
+          <tr class="text-sm">
+            <td class="px-5 py-3.5 font-medium text-gray-500">Total</td>
+            <td class="px-5 py-3.5 text-right tabular-nums text-gray-600">{{ summary.subtotal }}</td>
+            <td class="px-5 py-3.5 text-right tabular-nums text-gray-400 hidden sm:table-cell">{{ summary.tax }}</td>
+            <td class="px-5 py-3.5 text-right tabular-nums text-gray-400 hidden sm:table-cell">{{ summary.tip }}</td>
+            <td class="px-5 py-3.5 text-right tabular-nums font-semibold text-gray-900">{{ summary.total }}</td>
+            <td class="px-5 py-3.5 text-right tabular-nums text-gray-400 hidden md:table-cell">{{ summary.paid }}</td>
+            <td class="px-5 py-3.5 text-right tabular-nums font-semibold
+                       {% if summary.outstanding > 0 %}text-amber-700{% else %}text-emerald-600{% endif %}">
+              {{ summary.outstanding }}
+            </td>
+            {% if is_host %}<td></td>{% endif %}
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="mb-10">
+  <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    Items
+  </h2>
+  {% if items %}
+    <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-50">
+      {% for item in items %}
+        <div class="px-5 py-4 flex items-start justify-between text-sm gap-4
+                    hover:bg-gray-50/50 transition">
+          <div class="min-w-0">
+            <div class="flex items-baseline gap-2">
+              <span class="font-medium text-gray-900">{{ item.description }}</span>
+              <span class="text-xs text-gray-300">
+                {{ item.created_by.first_name|default:item.created_by.username }}
+              </span>
+            </div>
+            <div class="text-xs text-gray-400 mt-1">
+              {% for share in item.shares.all %}
+                {{ share.member.first_name|default:share.member.username }}{% if item.shares.count > 1 %} &times;{{ share.weight }}{% endif %}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <div class="flex items-center gap-4 shrink-0">
+            <span class="tabular-nums font-medium text-gray-900">{{ item.cost }}</span>
+            {% if not room.is_archived and item.created_by_id == user.id or not room.is_archived and is_host %}
+              {% if not room.is_archived %}
+                <a href="{% url 'rooms:item_edit' room.pk item.pk %}"
+                   class="text-xs text-gray-300 hover:text-indigo-500 transition">
+                  Edit
+                </a>
+                <form method="post"
+                      action="{% url 'rooms:item_delete' room.pk item.pk %}">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="text-xs text-gray-300 hover:text-red-500 transition">
+                    Delete
+                  </button>
+                </form>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="bg-white rounded-xl border border-dashed border-gray-200 px-6 py-10
+                text-center">
+      <p class="text-sm text-gray-400">No items logged yet.</p>
+    </div>
+  {% endif %}
+</section>
+
+<section>
+  <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    Payments
+  </h2>
+  {% if room.payments.all %}
+    <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-50">
+      {% for p in room.payments.all %}
+        <div class="px-5 py-4 flex items-center justify-between text-sm
+                    hover:bg-gray-50/50 transition">
+          <div class="flex items-baseline gap-2">
+            <span class="font-medium text-gray-900">
+              {{ p.member.first_name|default:p.member.username }}
+            </span>
+            <span class="tabular-nums text-gray-500">{{ p.amount_paid }}</span>
+            {% if p.note %}
+              <span class="text-xs text-gray-300">{{ p.note }}</span>
+            {% endif %}
+          </div>
+          {% if is_host and not room.is_archived %}
+            <form method="post"
+                  action="{% url 'rooms:payment_delete' room.pk p.pk %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="text-xs text-gray-300 hover:text-red-500 transition">
+                Delete
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="bg-white rounded-xl border border-dashed border-gray-200 px-6 py-10
+                text-center">
+      <p class="text-sm text-gray-400">No payments recorded yet.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

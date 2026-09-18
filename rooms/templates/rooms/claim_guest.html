@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Claim entry — {{ room.name }} — BillShare{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
+    <h1 class="text-xl font-semibold tracking-tight text-gray-900 mb-2">
+      Claim your entry
+    </h1>
+    <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+      You're about to take over the guest entry
+      <strong class="text-gray-700">{{ guest_membership.display_name }}</strong>
+      in <strong class="text-gray-700">{{ room.name }}</strong>.
+      Everything they owe and paid will move to your account.
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white
+                     font-medium py-2.5 px-4 rounded-lg transition
+                     shadow-sm shadow-indigo-500/20">
+        Claim
+      </button>
+    </form>
+
+    <p class="mt-5 text-sm text-center">
+      <a href="{% url 'rooms:room_list' %}"
+         class="text-gray-400 hover:text-gray-600 transition">
+        Cancel
+      </a>
+    </p>
+  </div>
+</div>
+{% endblock %}
