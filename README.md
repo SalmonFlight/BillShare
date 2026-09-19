@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <em>Creating a room, sharing the join code, approving a member, and splitting a shared item.</em>
+  <em>Creating a room, sharing the join code, approving a member, and splitting a shared item. (This demo only includes the Host side showcase clone my repo to try it out using two accounts, use an incognito tab to use two accounts at the same time)</em>
 </p>
 
 ## Features
