@@ -23,8 +23,7 @@
 
 ## Demo
 
-<p align="center">
-  <img src="demo.gif" alt="BillShare demo" width="800">
+<p align="center"><img width="1902" height="1024" alt="BillShare " src="https://github.com/user-attachments/assets/94d16bb9-6a23-4157-8abd-98abdf283df4" />
 </p>
 
 <p align="center">
@@ -146,7 +145,7 @@ python manage.py runserver
 
 **6. Open the app**
 
-Go to http://127.0.0.1:8000/ and log in. Then create a room and share the join code.
+Go to http://127.0.0.1:8000/rooms and log in. Then create a room and share the join code.
 
 </details>
 
