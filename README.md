@@ -187,7 +187,7 @@ I'm actively looking for SWE roles.
 
 <p>
   <a href="https://github.com/SalmonFlight"><img src="https://img.shields.io/badge/GitHub-SalmonFlight-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub"></a>
-  <a href="https://www.linkedin.com/in/brayden-aaron-santoso-351010434/"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square" alt="LinkedIn"></a>
+  <a href="www.linkedin.com/in/brayden-aaron-santoso"><img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square" alt="LinkedIn"></a>
   <a href="mailto:B.AaronSantoso@gmail.com"><img src="https://img.shields.io/badge/Email-B.AaronSantoso%40gmail.com-D14836?style=flat-square&logo=gmail&logoColor=white" alt="Email: B.AaronSantoso@gmail.com"></a>
 </p>
 
